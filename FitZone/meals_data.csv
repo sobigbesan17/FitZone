@@ -1,0 +1,4 @@
+MealName,MealType,Calories,Protein,Fat,Carbohydrates,Ingredients,CookingTime,NutritionalGoals,Budget,DietaryRestrictions,Allergies,MealSize
+Avocado Toast,Breakfast,320,12,18,35,"Avocado,Whole Grain Bread,Lemon,Salt,Pepper",10,General Fitness,5.50,Vegetarian,Gluten,1
+Grilled Chicken Salad,Lunch,380,35,12,18,"Chicken Breast,Mixed Greens,Tomatoes,Cucumber,Olive Oil",20,Weight Loss,8.00,None,None,1
+Salmon with Quinoa,Dinner,520,45,22,40,"Salmon Fillet,Quinoa,Lemon,Dill,Olive Oil",30,Muscle Gain,12.00,None,Fish,1

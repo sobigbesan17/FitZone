@@ -1,0 +1,4 @@
+WorkoutName,WorkoutType,WorkoutGoal,Difficulty,Equipment,WarmupDuration,CooldownDuration
+Full Body Strength,Strength,Muscle Gain,Intermediate,"Dumbbells,Barbell",10,10
+Morning Cardio Run,Cardio,Weight Loss,Beginner,None,5,10
+HIIT Circuit,HIIT,Weight Loss,Advanced,"Resistance Bands,Dumbbells",5,15
