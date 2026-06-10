@@ -1,4 +1,4 @@
-```markdown
+
 # FitZone
 SQL Gym Membership Project
 
@@ -27,6 +27,4 @@ python -m pip install captcha
 
 5. Run `python gym_run_page.py` in a new terminal to execute the code.
 
-```
 
-```
