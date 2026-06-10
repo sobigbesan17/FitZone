@@ -1,0 +1,443 @@
+import os
+import tkinter as tk
+from tkinter import ttk
+from pathlib import Path
+from PIL import Image, ImageTk
+from gym_font import ManageFont
+
+
+class GymHeader(tk.Frame):
+    def __init__(
+        self,
+        parent,
+        login_callback,
+        logout_callback,
+        signup_callback=None,
+        update_profile_callback=None,
+        home_callback=None,
+        meals_callback=None,
+        workouts_callback=None,
+        meal_planner_callback=None,
+        workout_planner_callback=None,
+        calculate_bmi_callback=None,
+        fitness_dashboard_callback=None,
+        view_gym_team_callback=None,
+        view_class_schedule_callback=None,
+        view_class_reservations_callback=None,
+        gym_class_booking_callback=None,
+        view_bmi_visualisation_callback=None,
+        gym_class_clashes_callback=None,
+        reviews_callback=None,
+        modify_classes_callback=None,
+        member_id=None,
+        username=None,
+        profile_image_path=None,
+    ):
+        self.header_height = 30
+        self.header_width = int(parent.winfo_screenwidth() * 1.2)
+        super().__init__(parent, background="#333333", height=self.header_height, width=self.header_width)
+        self.pack_propagate(False)
+        self.manage_font = ManageFont()
+        self.member_id = member_id
+        self.username = username
+        self.profile_image_path = profile_image_path
+        self.logo_image = self._load_image("Fitzone_Logo.png", (2*self.header_height, self.header_height))
+        self.avatar_image = self._load_profile_image(profile_image_path, (self.header_height, self.header_height)) or self._load_image("Avatar.png", (self.header_height, self.header_height))
+
+        self.login_callback = login_callback
+        self.logout_callback = logout_callback
+        self.signup_callback = signup_callback
+        self.update_profile_callback = update_profile_callback
+        self.home_callback = home_callback
+        self.meals_callback = meals_callback
+        self.workouts_callback = workouts_callback
+        self.meal_planner_callback = meal_planner_callback
+        self.workout_planner_callback = workout_planner_callback
+        self.calculate_bmi_callback = calculate_bmi_callback
+        self.fitness_dashboard_callback = fitness_dashboard_callback
+        self.view_gym_team_callback = view_gym_team_callback
+        self.view_class_schedule_callback = view_class_schedule_callback
+        self.view_class_reservations_callback = view_class_reservations_callback
+        self.gym_class_booking_callback = gym_class_booking_callback
+        self.view_bmi_visualisation_callback = view_bmi_visualisation_callback
+        self.gym_class_clashes_callback = gym_class_clashes_callback
+        self.reviews_callback = reviews_callback
+        self.modify_classes_callback = modify_classes_callback
+
+        self._create_header()
+
+    def _load_image(self, filename, size=None):
+        try:
+            path = Path(__file__).resolve().parent / filename
+            if not path.exists():
+                return None
+            img = Image.open(path)
+            if size:
+                width, height = size
+                if width is None and height is not None:
+                    ratio = height / img.height
+                    width = int(img.width * ratio)
+                elif height is None and width is not None:
+                    ratio = width / img.width
+                    height = int(img.height * ratio)
+                img = img.resize((width, height), Image.LANCZOS)
+            return ImageTk.PhotoImage(img)
+        except Exception:
+            return None
+
+    def _load_profile_image(self, image_path, size=None):
+        if not image_path:
+            return None
+        try:
+            candidate = Path(image_path)
+            if not candidate.is_absolute() or not candidate.exists():
+                candidate = Path.cwd() / image_path
+            if not candidate.exists():
+                candidate = Path(__file__).resolve().parent / image_path
+            if not candidate.exists():
+                return None
+            img = Image.open(candidate)
+            if size:
+                width, height = size
+                if width is None and height is not None:
+                    ratio = height / img.height
+                    width = int(img.width * ratio)
+                elif height is None and width is not None:
+                    ratio = width / img.width
+                    height = int(img.height * ratio)
+                img = img.resize((width, height), Image.LANCZOS)
+            return ImageTk.PhotoImage(img)
+        except Exception:
+            return None
+
+    def _load_profile_image(self, image_path, size=None):
+        if not image_path:
+            return None
+        try:
+            candidate = Path(image_path)
+            if not candidate.is_absolute() or not candidate.exists():
+                candidate = Path.cwd() / image_path
+            if not candidate.exists():
+                candidate = Path(__file__).resolve().parent / image_path
+            if not candidate.exists():
+                return None
+            img = Image.open(candidate)
+            if size:
+                width, height = size
+                if width is None and height is not None:
+                    ratio = height / img.height
+                    width = int(img.width * ratio)
+                elif height is None and width is not None:
+                    ratio = width / img.width
+                    height = int(img.height * ratio)
+                img = img.resize((width, height), Image.LANCZOS)
+            return ImageTk.PhotoImage(img)
+        except Exception:
+            return None
+
+    def _toggle_menu(self):
+        if hasattr(self, "nav_menu") and self.nav_menu.winfo_exists():
+            self._destroy_submenu()
+            self.nav_menu.destroy()
+            return
+
+        self._destroy_submenu()
+
+        self.nav_menu = tk.Toplevel(self)
+        self.nav_menu.overrideredirect(True)
+        self.nav_menu.attributes("-topmost", True)
+        self.nav_menu.configure(background="#444444", bd=1, highlightthickness=0)
+
+        x = self.winfo_rootx() + 10
+        y = self.winfo_rooty() + self.header_height
+        self.nav_menu.geometry(f"+{x}+{y}")
+
+        self.nav_menu.bind("<Escape>", lambda event: self._close_nav_menu())
+        self.nav_menu.bind("<Enter>", lambda event: self._cancel_nav_close())
+        self.nav_menu.bind("<Leave>", lambda event: self._schedule_nav_close())
+
+        submenu_arrow = "→"
+        for item in self.nav_items:
+            if len(item) == 4:
+                text, cmd, requires_login, children = item
+            else:
+                text, cmd, requires_login = item
+                children = None
+
+            state = tk.NORMAL
+            if requires_login and not self.member_id:
+                state = tk.DISABLED
+
+            btn_text = f"{text} {submenu_arrow}" if children else text
+            btn = tk.Button(
+                self.nav_menu,
+                text=btn_text,
+                background="#444444",
+                foreground="#FFFFFF",
+                disabledforeground="#888888",
+                font=self.manage_font.small_font,
+                relief=tk.FLAT,
+                state=state,
+                command=(lambda c=cmd: self._execute_nav_command(c)) if not children else None,
+                anchor="w",
+                padx=10,
+                pady=4,
+                cursor="hand2" if state == tk.NORMAL else "arrow",
+            )
+            btn.pack(fill=tk.X, pady=1)
+
+            if children and state == tk.NORMAL:
+                def show_children(event=None, widget=btn, child_items=children):
+                    self._cancel_nav_close()
+                    self._show_submenu(widget, child_items)
+
+                btn.bind("<Enter>", show_children)
+                btn.bind("<Button-1>", show_children)
+                btn.bind("<ButtonRelease-1>", show_children)
+                btn.bind("<Leave>", lambda event: self._schedule_nav_close())
+                btn.config(command=show_children)
+            else:
+                btn.bind("<Enter>", lambda event: self._cancel_nav_close())
+                btn.bind("<Leave>", lambda event: self._schedule_nav_close())
+
+        self.nav_menu.focus_force()
+
+    def _show_user_menu(self, event):
+        # Native pop-up dropdown menu triggered by clicking the username or avatar
+        user_menu = tk.Menu(self, tearoff=0, background="#444444", foreground="#FFFFFF", activebackground="#333333")
+        user_menu.add_command(label="Edit Profile", command=self.update_profile_callback)
+        user_menu.add_command(label="Logout", command=self.logout_callback)
+        
+        # Display menu at the mouse cursor click position
+        user_menu.tk_popup(event.x_root, event.y_root)
+
+    def _show_submenu(self, widget, children):
+        self._destroy_submenu()
+
+        self.submenu = tk.Toplevel(self.nav_menu)
+        self.submenu.overrideredirect(True)
+        self.submenu.attributes("-topmost", True)
+        self.submenu.configure(background="#444444", bd=1, highlightthickness=0)
+
+        x = widget.winfo_rootx() + widget.winfo_width()
+        y = widget.winfo_rooty()
+        self.submenu.geometry(f"+{x}+{y}")
+
+        self.submenu.bind("<Enter>", lambda event: (self._cancel_submenu_close(), self._cancel_nav_close()))
+        self.submenu.bind("<Leave>", lambda event: (self._schedule_submenu_close(), self._schedule_nav_close()))
+
+        for text, cmd, requires_login in children:
+            state = tk.NORMAL
+            if requires_login and not self.member_id:
+                state = tk.DISABLED
+
+            child_btn = tk.Button(
+                self.submenu,
+                text=text,
+                background="#444444",
+                foreground="#FFFFFF",
+                disabledforeground="#888888",
+                font=self.manage_font.small_font,
+                relief=tk.FLAT,
+                state=state,
+                command=lambda c=cmd: self._execute_nav_command(c) if callable(c) else None,
+                anchor="w",
+                padx=12,
+                pady=4,
+                cursor="hand2" if state == tk.NORMAL else "arrow",
+            )
+            child_btn.pack(fill=tk.X, pady=1)
+            child_btn.bind("<Enter>", lambda event: (self._cancel_submenu_close(), self._cancel_nav_close()))
+            child_btn.bind("<Leave>", lambda event: (self._schedule_submenu_close(), self._schedule_nav_close()))
+            child_btn.bind("<ButtonRelease-1>", lambda event, c=cmd: self._execute_nav_command(c) if callable(c) else None)
+
+    def _destroy_submenu(self):
+        if hasattr(self, "submenu") and self.submenu is not None and self.submenu.winfo_exists():
+            try:
+                self.submenu.destroy()
+            except Exception:
+                pass
+        self.submenu = None
+        if hasattr(self, "submenu_close_id") and self.submenu_close_id is not None:
+            try:
+                self.after_cancel(self.submenu_close_id)
+            except Exception:
+                pass
+            self.submenu_close_id = None
+
+    def _cancel_submenu_close(self, event=None):
+        if hasattr(self, "submenu_close_id") and self.submenu_close_id is not None:
+            try:
+                self.after_cancel(self.submenu_close_id)
+            except Exception:
+                pass
+            self.submenu_close_id = None
+
+    def _schedule_submenu_close(self, event=None):
+        self._cancel_submenu_close()
+        self.submenu_close_id = self.after(200, self._destroy_submenu)
+
+    def _cancel_nav_close(self, event=None):
+        if hasattr(self, "nav_menu_close_id") and self.nav_menu_close_id is not None:
+            try:
+                self.after_cancel(self.nav_menu_close_id)
+            except Exception:
+                pass
+            self.nav_menu_close_id = None
+
+    def _schedule_nav_close(self, event=None):
+        self._cancel_nav_close()
+        self.nav_menu_close_id = self.after(200, self._close_nav_menu)
+
+    def _execute_nav_command(self, cmd):
+        self._destroy_submenu()
+        self._close_nav_menu()
+        if callable(cmd):
+            cmd()
+
+    def _close_nav_menu(self):
+        self._destroy_submenu()
+        if hasattr(self, "nav_menu") and self.nav_menu.winfo_exists():
+            try:
+                self.nav_menu.destroy()
+            except Exception:
+                pass
+
+    def _create_header(self):
+        self.grid_columnconfigure(0, weight=0)
+        self.grid_columnconfigure(1, weight=1)
+        self.grid_columnconfigure(2, weight=0)
+
+        self.nav_items = [
+            ("Home", self.home_callback, False),
+            ("Fitness Dashboard", self.fitness_dashboard_callback, True),
+            (
+                "Wellness",
+                None,
+                True,
+                [
+                    ("Meals", self.meals_callback, True),
+                    ("Workouts", self.workouts_callback, True),
+                    ("Calculate BMI", self.calculate_bmi_callback, True),
+                    ("BMI Visualisation", self.view_bmi_visualisation_callback, True),
+                ],
+            ),
+            (
+                "Planners",
+                None,
+                True,
+                [
+                    ("Meal Planner", self.meal_planner_callback, True),
+                    ("Workout Planner", self.workout_planner_callback, True),
+                ],
+            ),
+            (
+                "Classes",
+                None,
+                True,
+                [
+                    ("Schedule", self.view_class_schedule_callback, True),
+                    ("Reservations", self.view_class_reservations_callback, True),
+                    ("Book Class", self.gym_class_booking_callback, True),
+                    ("Clashes", self.gym_class_clashes_callback, True),
+                    ("Modify Classes", self.modify_classes_callback, True),
+                ],
+            ),
+            ("Reviews", self.reviews_callback, False),
+            ("Our Team", self.view_gym_team_callback, False),
+        ]
+
+        menu_button = tk.Button(
+            self,
+            text="☰",
+            background="#333333",
+            foreground="#FFFFFF",
+            font=self.manage_font.small_font,
+            bd=0,
+            activebackground="#444444",
+            activeforeground="#FFFFFF",
+            cursor="hand2",
+            command=self._toggle_menu,
+            padx=4,
+            pady=2,
+            width=2,
+        )
+        menu_button.grid(row=0, column=0, sticky="w", padx=10, pady=4)
+
+        if self.logo_image:
+            logo_label = tk.Label(self, image=self.logo_image, background="#333333", cursor="hand2")
+        else:
+            logo_label = tk.Label(
+                self,
+                text="FitZone",
+                background="#333333",
+                foreground="#FFD700",
+                font=self.manage_font.large_bold_heading_font,
+                cursor="hand2",
+            )
+        logo_label.grid(row=0, column=1, pady=4)
+        if callable(self.home_callback):
+            logo_label.bind("<Button-1>", lambda e: self.home_callback())
+
+        auth_frame = tk.Frame(self, background="#333333")
+        auth_frame.grid(row=0, column=2, sticky="e", padx=10, pady=4)
+
+        if self.member_id:
+            username = getattr(self, "username", None)
+            display_name = username if username else "User"
+
+            if self.avatar_image:
+                avatar_label = tk.Label(
+                    auth_frame,
+                    image=self.avatar_image,
+                    background="#333333",
+                    cursor="hand2"
+                )
+                avatar_label.pack(side=tk.LEFT, padx=(0, 5), pady=2)
+                avatar_label.bind("<Button-1>", self._show_user_menu)
+
+            name_label = tk.Label(
+                auth_frame,
+                text=display_name,
+                background="#333333",
+                foreground="#FFFFFF",
+                font=self.manage_font.medium_letters_font,
+                cursor="hand2"
+            )
+            name_label.pack(side=tk.LEFT, padx=(0, 4), pady=2)
+            name_label.bind("<Button-1>", self._show_user_menu)
+            
+        else:
+            login_command = self.login_callback if callable(self.login_callback) else None
+
+            login_btn = tk.Button(
+                auth_frame,
+                text="Login",
+                background="#FFE4B5",
+                foreground="#000000",
+                font=self.manage_font.small_font,
+                command=login_command,
+                state=tk.NORMAL if login_command else tk.DISABLED,
+                padx=6,
+                pady=2,
+                width=6,
+            )
+            login_btn.pack(side=tk.LEFT, padx=4, pady=2)
+
+            signup_command = self.signup_callback if callable(self.signup_callback) else None
+            if signup_command is None:
+                signup_command = self.login_callback if callable(self.login_callback) else None
+
+            signup_btn = tk.Button(
+                auth_frame,
+                text="Sign Up",
+                background="#D11A17",
+                foreground="#FFFFFF",
+                font=self.manage_font.small_font,
+                command=signup_command,
+                state=tk.NORMAL if signup_command else tk.DISABLED,
+                padx=6,
+                pady=2,
+                width=6,
+            )
+            signup_btn.pack(side=tk.LEFT, padx=4, pady=2)
