@@ -2,9 +2,9 @@
 # FitZone
 SQL Gym Membership Project
 
-FitZone is a small gym‑management system I built to make it easier to handle memberships, logins, attendance, and basic analytics. I created a desktop app in Python using Tkinter for the interface, Pillow for images, TkCalendar for date inputs, and bcrypt to securely store passwords. For the data side, I used Pandas and NumPy, and I added simple charts with Matplotlib and SciPy to show things like attendance patterns.
+FitZone is a compact gym‑management system designed to streamline membership handling, user authentication, attendance tracking, and basic BMI analytics. The application is built as a Python desktop program using Tkinter for the interface, Pillow for image processing, TkCalendar for date inputs, and bcrypt for secure password storage. Data processing is handled with Pandas and NumPy, while Matplotlib and SciPy generate simple visual insights such as attendance trends.
 
-Most of the work went into planning the features, designing the interface, setting up the database, and testing everything as I built it. Adding proper validation and secure login made the system more reliable, and the analytics helped show how the gym is being used. Overall, the project showed how a small tool can make day‑to‑day admin tasks easier and give clearer insight into member activity.
+The project involved defining core features, designing an intuitive interface, structuring the database, and testing each component throughout development. Implementing proper validation and secure login workflows improved reliability, and the analytics features provided clearer visibility into member activity. Overall, FitZone demonstrates how a focused, lightweight tool can simplify daily administrative tasks and offer meaningful insight into gym usage patterns.
 
 How to Run the Code
 1. Go to Code → Download ZIP
