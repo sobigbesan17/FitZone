@@ -12,7 +12,7 @@ Most of the work went into planning the features, designing the interface, setti
 3. Open **Terminal**
 4. Install the required Python packages:
 
-```bash
+\`\`\`bash
 python -m pip install --upgrade pip
 python -m pip install pillow
 python -m pip install tkcalendar
@@ -22,3 +22,6 @@ python -m pip install scipy
 python -m pip install numpy
 python -m pip install pandas
 python -m pip install captcha
+\`\`\`
+
+Run \`python gym_run_page.py\` in a new terminal to execute the code.
