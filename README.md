@@ -115,7 +115,7 @@ python -m venv .venv
 
 ```powershell
 python -m pip install --upgrade pip
-python -m pip install -r requirements.txt
+python -m pip install -r /workspaces/FitZone/FitZone-main/requirements.txt
 ```
 
 ## Run the application
