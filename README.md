@@ -123,7 +123,7 @@ python -m pip install -r requirements.txt
 From the repository root:
 
 ```powershell
-python FitZone/gym_run_page.py
+python FitZone-main/FitZone/gym_run_page.py
 ```
 
 The application will:
