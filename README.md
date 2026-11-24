@@ -108,7 +108,7 @@ FitZone-main/
 
 ```powershell
 python -m venv .venv
-.venv\Scripts\Activate.ps1
+source .venv/bin/activate
 ```
 
 4. Install the dependencies:
