@@ -4,7 +4,7 @@
 **FitZone** is a desktop gym-management application built with Python, Tkinter, and SQLite. It provides members and gym staff with a complete workflow for registration, membership management, class bookings, BMI analysis, personalised meal plans, and fitness tracking.
 
 <p align="center">
-  <img src="FitZone/assets/images/Fitzone_Logo.png" alt="FitZone logo" width="240">
+  <img src="FitZone/assets/images/FitZone_Logo_Black.png" alt="FitZone logo" width="240">
 </p>
 
 ## Preview
